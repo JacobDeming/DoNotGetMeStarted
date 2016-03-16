@@ -139,7 +139,12 @@ listRef.on("value",function(snapshot){
 	      		universalRef.update({roundwinner:voteList[0][2]});
 	      		roundsWonRef.update({votes:0});
 	      		roundsWonRef.update({roundsWon:voteList[0][1]+1});}}
-	      	$("#StartPage").append("<button class='btn btn-warning center-block' id='StartGame'>Start The Round</button>");}}
+	      	$("#StartPage").html("<button class='btn btn-warning center-block' id='StartGame'>Start The Round</button>");
+	      	$("#StartGame").on("click",function(){
+			    if(playerHost==true&&playersPresent>=numPlayers&&started==false){
+			      started=true;
+			      universalRef.update({start:true});
+			      chooseTopic();}})}}
 //Updates the leaderboard on the server
 	leaderboard.push([rants.userId,rants.roundsWon]);
 	if(count==numPlayers){

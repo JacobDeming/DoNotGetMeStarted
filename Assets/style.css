@@ -4,7 +4,7 @@
 
 .rant{
 	max-width: 350px;
-	display: inline-block;
+	float: left;
 	width:100%;
 	min-height: 500px;
 	height:100%;
