@@ -2,7 +2,7 @@ $(document).ready(function(){
 
 
 //Initialize the "topics" and the "pastTopics" arrays
-var topics=["The Impending Robot Invasion","Baby Carrots","Zelda Games","A Tiny Donkey That Only Speaks Spanish","Clowns","The Resurgence of 80's Media","Superheroes","Vampires","Ferris Wheels","Big Pharma","The Patriarchy","Terrible Roommates","After School Drug Programs","Italian Cuisine","A Brick of Uncut Bolivian Cocaine","Chocolate Cake","Soft Baby Kittens","A Marathon of MTV's 'Intervention'","An Internship With Donald Trump","The Person to the Left of You","Professional Video Gaming","SPORTS!","The Concept of Currency","The Knights Templar","A 16 Book Fantasy Series","LEGO Brand Bricks","Pulling an All-Nighter","The Nintendo 64","Bubble Blowing Parties"];
+var topics=["The Impending Robot Invasion","Baby Carrots","Zelda Games","A Tiny Donkey That Only Speaks Spanish","Clowns","The Resurgence of 80's Media","Superheroes","Vampires","Ferris Wheels","Big Pharma","The Patriarchy","Terrible Roommates","After School Drug Programs","Italian Cuisine","A Brick of Uncut Bolivian Cocaine","Chocolate Cake","Soft Baby Kittens","A Marathon of MTV's 'Intervention'","An Internship With Donald Trump","The Person to the Left of You","Professional Video Gaming","SPORTS!","The Concept of Currency","The Knights Templar","A 16 Book Fantasy Series","LEGO Brand Bricks","Pulling an All-Nighter","The Nintendo 64","Bubble Blowing Parties","Programming"];
 var pastTopics=[];
 // Initialize other variables
 var gameRef=new Firebase("https://dont-get-me-started.firebaseio.com/");
@@ -17,6 +17,8 @@ var rant="";
 var rantList=[];
 var leaderboard=[];
 var started=false;
+var timerCount;
+var timeLeft=45;
 
 $("#TopicArea").hide();
 $("#VotingArea").hide();
@@ -43,7 +45,7 @@ listRef.limitToFirst(1).on("child_added",function(snapshot){
     playerHost=true;
 	$("#StartPage").append("<button class='btn btn-warning center-block' id='StartGame'>Start The Round</button>");}
   else if(isHost.userId!=userId){
-  	$("#StartGame").hide();
+  	$("#StartGame").remove();
     playerRef.update({host:false});
     playerHost=false;}})}
 
@@ -67,22 +69,22 @@ var chooseTopic=function(){
 
 //Starts the timer for turning in a rant
 var timerStart=function(){
-  var timeLeft=45;
-  var count=setInterval(function(){timeLeft--;$("#Timer").html(timeLeft);},1000);
-    if(timeLeft===0){
-      clearInterval(count);}
-  setTimeout(function(){votingRound();$("#Timer").html("TIME UP!");universalRef.update({start:false});},45000);
+  $("#Timer").html("45");
+  timeLeft=45;
+  timerCount=setInterval(function(){timeLeft--;$("#Timer").html(timeLeft);},1000);
+    if(timeLeft<=0){
+      console.log("This timer has stopped");
+      clearInterval(timerCount);}
+  setTimeout(function(){votingRound();universalRef.update({start:false});},46000);
   setTimeout(function(){playerRef.update({rant:""});$("#RantPreview").html("");$("#Text").empty()},49000);}
 
 //The voting round starts
 var votingRound=function(){
-  console.log("Hello");
-  console.log(rantList);
+  $("#StartGame").show();
   var topicsRef=new Firebase("https://dont-get-me-started.firebaseio.com/topics");
   topicsRef.update({currentTopic:""});
   $("#TopicArea").fadeOut(1000);
-  for(var i=0;i<rantList.length;i++){
-  	console.log("Hello2");
+  for(var i=0;i<numPlayers;i++){
     $("#VotingArea").append(rantList[i]);}
   $("#VotingArea").fadeIn(5000);}
 
@@ -96,7 +98,7 @@ $("#Text").on("keypress",function(e){
 	if(keycode=='13'){
 		rant=$("#Text").val();
 		playerRef.update({rant:rant});
-		$("#RantPreview").html(rant);}})
+		$("#RantPreview").html("<h4 class='text-center'>"+rant+"</h4>");;}})
 
 //Pushes every player's rant into an array
 listRef.on("value",function(snapshot){
@@ -136,8 +138,7 @@ listRef.on("value",function(snapshot){
 	      		var roundsWonRef=new Firebase("https://dont-get-me-started.firebaseio.com/playerlist/"+voteList[0][2]);
 	      		universalRef.update({roundwinner:voteList[0][2]});
 	      		roundsWonRef.update({votes:0});
-	      		roundsWonRef.update({roundsWon:voteList[0][1]+1});}}
-	      	$("#StartGame").show();}}
+	      		roundsWonRef.update({roundsWon:voteList[0][1]+1});}}}}
 //Updates the leaderboard on the server
 	leaderboard.push([rants.userId,rants.roundsWon]);
 	if(count==numPlayers){
@@ -154,14 +155,18 @@ listRef.on("value",function(snapshot){
 			$("#Leaderboard").append("<tr><td>"+leaderboard[i][0]+"</td><td>"+leaderboard[i][1]+"</td><b></tr>");}}
 //Turns rants into clickable buttons with which you can vote on whilst making certain you do not vote for yourself
     rantList.push("<div class='rant text-center' id='rant"+count+"'><p>"+rants.rant+"</p></div>");
+    shuffle(rantList);
     $("#rant"+count).data("URLForMe",rants.url);
     $("#rant"+count).data("voteForMe",rants.votes);
     $("#rant"+count).data("nameForMe",rants.userId);
     $("#rant"+count).on("click",function(){
       var name=$(this).data("nameForMe");
-        if(userId===name){
-          alert("You cannot vote for yourself!");}
+        if(userId===name){}
         else{
+          rant="";
+          $("#Text").val("");
+          $("#RantPreview").empty();
+          clearInterval(timerCount);
           var URL=$(this).data("URLForMe");
           var votesRef=new Firebase(URL);
           var newVotes=$(this).data("voteForMe");
@@ -187,13 +192,27 @@ universalRef.child("start").on("value",function(snapshot){
     $("#VotingArea").fadeOut(1000);
     $("#TopicArea").fadeIn(2000);
     timerStart();
-	$("#StartGame").hide()}})
+	  $("#StartGame").hide()}})
 
 //Updates everyone's screens with the current prompt
 var currentTopicRef=gameRef.child("topics").child("currentTopic");
   currentTopicRef.on("value",function(snapshot){
     var randomTopic=snapshot.val();
     $("#CardReveal").html("<h2 class='CurrentCard'>"+randomTopic+"</h2>");})
+
+//Shuffles an array to randomize it
+function shuffle(array) {
+  var currentIndex=array.length,temporaryValue,randomIndex;
+  // While there remain elements to shuffle...
+  while(0!==currentIndex){
+    // Pick a remaining element...
+    randomIndex=Math.floor(Math.random()*currentIndex);
+    currentIndex-=1;
+    // And swap it with the current element.
+    temporaryValue=array[currentIndex];
+    array[currentIndex]=array[randomIndex];
+    array[randomIndex]=temporaryValue;}
+  return array;}
 
 makeHost(listRef);
 })
