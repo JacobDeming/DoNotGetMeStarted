@@ -43,7 +43,7 @@ listRef.limitToFirst(1).on("child_added",function(snapshot){
     playerHost=true;
 	$("#StartPage").append("<button class='btn btn-warning center-block' id='StartGame'>Start The Round</button>");}
   else if(isHost.userId!=userId){
-  	$("#StartGame").remove();
+  	$("#StartGame").hide();
     playerRef.update({host:false});
     playerHost=false;}})}
 
@@ -128,23 +128,16 @@ listRef.on("value",function(snapshot){
 	      	console.log(voteList[0]);
 	      	if(voteList[0].length>3){
 	      		winnerList=voteList[0][i]+" "+winnerList;
-	      		$("#VotingArea").html("<p>This round's winners are... <b>"+winnerList+"!!</b></p>");
 	      		var roundsWonRef=new Firebase("https://dont-get-me-started.firebaseio.com/playerlist/"+voteList[0][i]);
 	      		universalRef.update({roundwinner:winnerList});
 	      		roundsWonRef.update({votes:0});
 	      		roundsWonRef.update({roundsWon:voteList[0][i-1]+1});}
 	      	else if(voteList[0].length<=3){
-	      		$("#VotingArea").html("<p>This round's winner is... <b>"+voteList[0][2]+"!!</b></p>");
 	      		var roundsWonRef=new Firebase("https://dont-get-me-started.firebaseio.com/playerlist/"+voteList[0][2]);
 	      		universalRef.update({roundwinner:voteList[0][2]});
 	      		roundsWonRef.update({votes:0});
 	      		roundsWonRef.update({roundsWon:voteList[0][1]+1});}}
-	      	$("#StartPage").html("<button class='btn btn-warning center-block' id='StartGame'>Start The Round</button>");
-	      	$("#StartGame").on("click",function(){
-			    if(playerHost==true&&playersPresent>=numPlayers&&started==false){
-			      started=true;
-			      universalRef.update({start:true});
-			      chooseTopic();}})}}
+	      	$("#StartGame").show();}}
 //Updates the leaderboard on the server
 	leaderboard.push([rants.userId,rants.roundsWon]);
 	if(count==numPlayers){
@@ -194,7 +187,7 @@ universalRef.child("start").on("value",function(snapshot){
     $("#VotingArea").fadeOut(1000);
     $("#TopicArea").fadeIn(2000);
     timerStart();
-	$("#StartGame").remove()}})
+	$("#StartGame").hide()}})
 
 //Updates everyone's screens with the current prompt
 var currentTopicRef=gameRef.child("topics").child("currentTopic");
