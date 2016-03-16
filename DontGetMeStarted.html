@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Do NOT Get Me Started!</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link rel="stylesheet" href="assets/style.css">
+	<script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+</head>
+<body>
+
+
+<!-- Start Page -->
+<div id="StartPage" class="container">
+<h1 class="text-center" id="Title">Do NOT Get Me Started!</h1>
+</div>
+
+<!-- Page for writing answers -->
+<div id="TopicArea" class="container">
+	<div id="CardReveal"></div>
+	<h4 class="text-center" id="Timer">Time Left: 45</h4>
+	<button class="center-block btn btn-success" id="SubmitButton">You Asked For It...</button>
+	<textarea class="center-block" id="Text" placeholder="Begin your rant"></textarea><br>
+	<h3 class="center-block" id="RantPreview"></h3>
+</div>
+
+<!-- Page for voiting on answers -->
+<div id="VotingArea" class="container">
+	<div id="Winner" class="container center-block"></div>
+</div>
+
+<!-- Leaderboard Table -->
+<div class="container">
+<table class="table" id="Leaderboard">
+</table>
+</div>
+
+<!-- Runs the JavaScript -->
+<script type="text/javascript" src="JavaScript/DontGetMeStarted2.js"></script>
+
+</body>
+</html>
