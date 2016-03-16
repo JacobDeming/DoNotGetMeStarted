@@ -138,7 +138,8 @@ listRef.on("value",function(snapshot){
 	      		var roundsWonRef=new Firebase("https://dont-get-me-started.firebaseio.com/playerlist/"+voteList[0][2]);
 	      		universalRef.update({roundwinner:voteList[0][2]});
 	      		roundsWonRef.update({votes:0});
-	      		roundsWonRef.update({roundsWon:voteList[0][1]+1});}}}}
+	      		roundsWonRef.update({roundsWon:voteList[0][1]+1});}}
+	      	$("#StartPage").append("<button class='btn btn-warning center-block' id='StartGame'>Start The Round</button>");}}
 //Updates the leaderboard on the server
 	leaderboard.push([rants.userId,rants.roundsWon]);
 	if(count==numPlayers){
@@ -195,13 +196,6 @@ var currentTopicRef=gameRef.child("topics").child("currentTopic");
   currentTopicRef.on("value",function(snapshot){
     var randomTopic=snapshot.val();
     $("#CardReveal").html("<h2 class='CurrentCard'>"+randomTopic+"</h2>");})
-
-roundWinnerRef.on("value",function(snapshot){
-	var thing=snapshot.val();
-	if(thing=""){
-		$("#Winner").html("");}
-	else{
-		$("#Winner").html("<p>This round's winner is... <b>"+thing+"!!</b></p>");}})
 
 makeHost(listRef);
 })
