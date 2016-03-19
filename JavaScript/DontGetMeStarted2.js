@@ -58,7 +58,7 @@ isOnlineRef.on("value",function(snapshot){
 //Random Topic is chosen for all players and prints to screen
 var chooseTopic=function(){
   var topicsRef=new Firebase("https://dont-get-me-started.firebaseio.com/topics");
-  if(playerHost==true&&numPlayers>=3){
+  if(playerHost==true){
     randomTopic=topics[Math.floor(Math.random()*topics.length)];
     for(var i=-1;i<pastTopics.length||i<10;i++){
       if(randomTopic===pastTopics[i]){
@@ -181,7 +181,7 @@ listRef.on("value",function(snapshot){
 listRef.on("value",function(snapshot){
   var playersPresent=(snapshot.numChildren());
   $("#StartGame").on("click",function(){
-    if(playerHost==true&&playersPresent>=numPlayers&&started==false){
+    if(playerHost==true&&playersPresent>=numPlayers&&started==false&&playersPresent>=3){
       started=true;
       universalRef.update({start:true});
       chooseTopic();}})})
