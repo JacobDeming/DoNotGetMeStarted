@@ -2,7 +2,7 @@ $(document).ready(function(){
 
 
 //Initialize the "topics" and the "pastTopics" arrays
-var topics=["The Impending Robot Invasion","Baby Carrots","Zelda Games","A Tiny Donkey That Only Speaks Spanish","Clowns","The Resurgence of 80's Media","Superheroes","Vampires","Ferris Wheels","Big Pharma","The Patriarchy","Terrible Roommates","After School Drug Programs","Italian Cuisine","A Brick of Uncut Bolivian Cocaine","Chocolate Cake","Soft Baby Kittens","A Marathon of MTV's 'Intervention'","An Internship With Donald Trump","The Person to the Left of You","Professional Video Gaming","SPORTS!","The Concept of Currency","The Knights Templar","A 16 Book Fantasy Series","LEGO Brand Bricks","Pulling an All-Nighter","The Nintendo 64","Bubble Blowing Parties","Programming"];
+var topics=["The Impending Robot Invasion","Baby Carrots","Zelda Games","A Tiny Donkey That Only Speaks Spanish","Clowns","The Resurgence of 80's Media","Superheroes","Vampires","Ferris Wheels","Big Pharma","The Patriarchy","Terrible Roommates","After School Drug Programs","Italian Cuisine","A Brick of Uncut Bolivian Cocaine","Chocolate Cake","Soft Baby Kittens","A Marathon of MTV's 'Intervention'","An Internship With Donald Trump","Yuppies","Professional Video Gaming","SPORTS!","The Concept of Currency","The Knights Templar","A 16 Book Fantasy Series","LEGO Brand Bricks","Pulling an All-Nighter","The Nintendo 64","Bubble Blowing Parties","Programming","Hair Care Products","The Kids These Days","Equal Rights","Sunglasses and the People Who Wear Them","Mavis Beacon Teaches Typing","Music These Days","Street Drummers","Jazzercise","The Delicate Ecosystem","A Terrible First Date","'The Incident'","A Child with a Bicycle","Faked Home Footage of You in a Vulnerable Moment","Allegations in the Media Against Your Good Character","The Unholy Rebirth of an American President","Getting Framed for Murder","Taking the Wrong Coat at a Party","Living in the Bible Belt","WHERE ARE MY PANTS!?","Persistent Medical Staff Insisting They Look at Your Butt","An Assasination Attempt","Home Movie Footage","Life-Ruining Blackmail","Shooting a Man Execution Style","Being Forced to Attend Summer School","Drinking a Glass of Acrylic Paint","Burning Out of Your Career","Enjoying Something Ironically","Being Attacked by a Cougar","Having to Choke Someone in Self-Defense","Losing Your Passport on the Day of a Flight","Being Late to Board Your Cruise","Your Closest Friend Bursting in During Your Most Intimate Moment","Thin, Nutritionless Gruel","Being Interrupted by Yourself... FROM THE FUTURE","Public Transit","A Sudden, Mysterious Smell"];
 var pastTopics=[];
 // Initialize other variables
 var gameRef=new Firebase("https://dont-get-me-started.firebaseio.com/");
@@ -58,7 +58,7 @@ isOnlineRef.on("value",function(snapshot){
 //Random Topic is chosen for all players and prints to screen
 var chooseTopic=function(){
   var topicsRef=new Firebase("https://dont-get-me-started.firebaseio.com/topics");
-  if(playerHost==true){
+  if(playerHost==true&&numPlayers>=3){
     randomTopic=topics[Math.floor(Math.random()*topics.length)];
     for(var i=-1;i<pastTopics.length||i<10;i++){
       if(randomTopic===pastTopics[i]){
@@ -71,12 +71,14 @@ var chooseTopic=function(){
 var timerStart=function(){
   $("#Timer").html("45");
   timeLeft=45;
-  timerCount=setInterval(function(){timeLeft--;$("#Timer").html(timeLeft);},1000);
-    if(timeLeft<=0){
-      console.log("This timer has stopped");
-      clearInterval(timerCount);}
+  timerCount=setInterval(function(){timeLeft--;$("#Timer").html(timeLeft);timeUp();},1000);
   setTimeout(function(){votingRound();universalRef.update({start:false});},46000);
   setTimeout(function(){playerRef.update({rant:""});$("#RantPreview").html("");$("#Text").empty()},49000);}
+
+var timeUp=function(){
+  if(timeLeft<=0){
+      $("#Timer").html("TIME UP!");
+      clearInterval(timerCount);}}
 
 //The voting round starts
 var votingRound=function(){
@@ -187,7 +189,7 @@ listRef.on("value",function(snapshot){
 //Starts the round for all players when the host starts it
 universalRef.child("start").on("value",function(snapshot){
   var gameOn=snapshot.val();
-  if(gameOn==true){
+  if(gameOn==true&&numPlayers>=3){
     playerRef.update({votes:0});
     $("#VotingArea").fadeOut(1000);
     $("#TopicArea").fadeIn(2000);
